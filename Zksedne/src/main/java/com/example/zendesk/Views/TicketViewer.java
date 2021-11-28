@@ -71,8 +71,8 @@ public class TicketViewer
                     collectTickets(1);
                 else//call successfull -> we can print the tickets
                     DisplayTickets(totalReqList.getTotalReqList());
-
-                message = "\nAll tickets have been successfully printed\n";
+                if (callSuccessfull)
+                    message = "\nAll tickets have been successfully printed\n";
             }
             else if (input.equals("2"))//if the user wants to see one ticket
             {
