@@ -1,0 +1,3 @@
+include ':Zksedne'
+include ':app'
+rootProject.name = "Zendesk"
