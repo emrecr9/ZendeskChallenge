@@ -16,17 +16,17 @@ import retrofit2.Response;
 
 public class TicketViewer
 {
-    private static TotalReqList totalReqList;
     private static int pageNumber;
     private static boolean callSuccessfull;
     private static Scanner scan;
+    static ticketViewModel ticketViewModel;
 
     protected TicketViewer()
     {
         //we initialize all the global variables that will be used
-        totalReqList = new TotalReqList();
         scan= new Scanner(System.in);
         callSuccessfull = false;
+        ticketViewModel = new ticketViewModel();
     }
 
     public static void main (String [] args)
@@ -70,7 +70,8 @@ public class TicketViewer
                 if (!callSuccessfull)
                     collectTickets(1);
                 else//call successfull -> we can print the tickets
-                    DisplayTickets(totalReqList.getTotalReqList());
+                    DisplayTickets(ticketViewModel.returnTicketList());
+
                 if (callSuccessfull)
                     message = "\nAll tickets have been successfully printed\n";
             }
@@ -89,7 +90,7 @@ public class TicketViewer
     protected static String DisplayATicket()
     {
         int ticketID;
-        String message = "";
+        String outputMessage = "";
         boolean playLoop = false;
 
         //while a ticket has not been displayed and the user wants to display one
@@ -110,10 +111,10 @@ public class TicketViewer
                 ticketID = Integer.parseInt(answer);
 
                 // if the ticket number is valid, print it
-                if (totalReqList.getTotalReqList().containsKey(ticketID))
+                if (ticketViewModel.ifContainsTicket(ticketID))
                 {
                     PrintTicketDetails(ticketID);
-                    message = "\n\tThe ticket "+ ticketID + " has been printed\n";
+                    outputMessage = "\n\tThe ticket "+ ticketID + " has been printed\n";
                 }
                 else if (ticketID != -1)
                 {
@@ -123,7 +124,7 @@ public class TicketViewer
                 else if (ticketID == -1)// if the user wishes to exit
                 {
                     playLoop = true;
-                    message = "\nExiting...\n";
+                    outputMessage = "\nExiting...\n";
                 }
             } catch (NumberFormatException e)
             {
@@ -131,7 +132,7 @@ public class TicketViewer
                 System.out.println("\nYou have entered an invalid choice. Try again");
             }
         }
-        return message;
+        return outputMessage;
     }
 
     //this function will intent to collect tickets from the zendesk API page by page
@@ -153,10 +154,10 @@ public class TicketViewer
            //if the response is successfull
            if (response != null)
            {
-               ticketViewModel ticketViewModel = new ticketViewModel();
+
 
                //send the response to the function for processing to retrieve the list to print
-               List<Tickets> requestList = ticketViewModel.processData(response, totalReqList.getTotalReqList());
+               List<Tickets> requestList = ticketViewModel.processData(response);
 
                //if user wants to see all the tickets and they have  not been collected from the API,
                //we print them one page of 25 at the time
@@ -209,13 +210,12 @@ public class TicketViewer
     protected static void PrintTicketDetails(int id)
     {
         //retrieves the ticket to be displayed
-        Tickets ticket = totalReqList.getTotalReqList().get(id);
+        Tickets ticket = ticketViewModel.returnTicket(id);
 
         System.out.println("\tTicket " + ticket.getId() + " - Subject: \"" + ticket.getSubject() +  "\"" + "\t Status: " + ticket.getStatus()
                 + "\tCreated on " + ticket.getCreated_at() + " by " + ticket.getRequester_id());
         System.out.println("\n\tDescription");
         System.out.println("\"" + ticket.getDescription()+ "\"");
- //       System.out.println("\tCreated on " + ticket.getCreated_at() + " by " + ticket.getRequester_id());
     }
 
     //This function prints a list of tickets. Only the ticket number and subject are displayed for each

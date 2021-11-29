@@ -29,11 +29,8 @@ data class Tickets (
         @SerializedName("created_at")
         val created_at: String,
         @SerializedName("updated_at")
-        val updated_at: String,
-        @SerializedName("type")
-        val type: String,
-        @SerializedName("priority")
-        val priority: String
+        val updated_at: String
+
 )
 
 data class Meta(
